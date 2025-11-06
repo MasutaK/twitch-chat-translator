@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Twitch Chat Translator
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Translate chat message, copy to clipboard without modifying chat, with preview, clipboard notice, resets on send
 // @match        https://www.twitch.tv/*
 // @author       Masuta
@@ -62,68 +62,67 @@
         const previewField = document.createElement('div');
         previewField.style.cssText = 'margin-top:2px;padding:2px 4px;background:rgba(255,255,255,0.1);border-radius:4px;font-size:11px;color:#fff;max-width:100%;white-space:pre-wrap;word-break:break-word;';
 
-        // Field for clipboard notification
-        const clipboardNotice = document.createElement('div');
-        clipboardNotice.style.cssText = 'margin-top:2px;font-size:11px;color:#0f0;font-weight:bold;display:none;';
-        clipboardNotice.textContent = '✅ Text copied to clipboard';
+        // Field for notifications (clipboard or error)
+        const notice = document.createElement('div');
+        notice.style.cssText = 'margin-top:2px;font-size:11px;font-weight:bold;display:none;';
+        notice.textContent = '';
+
+        function showNotice(text, color='#0f0') {
+            notice.textContent = text;
+            notice.style.color = color;
+            notice.style.display = 'block';
+            setTimeout(() => { notice.style.display = 'none'; }, 2000);
+        }
 
         // Translate: copy to clipboard, do NOT touch chat field
         translateBtn.onclick = async () => {
             const input = document.querySelector('textarea[data-a-target="chat-input"], div[contenteditable][data-a-target="chat-input"]');
-            if (!input) return alert('No text detected');
-
-            const text = input.value || input.textContent || '';
-            if (!text.trim()) return alert('No text detected');
+            const text = input?.value || input?.textContent || '';
+            if (!text.trim()) {
+                showNotice('⚠️ No text detected', '#ff0');
+                return;
+            }
 
             const translated = await translateText(text, targetLang);
             lastTranslation = translated;
 
             copyToClipboard(translated);
-
-            // Show clipboard notice for 2s
-            clipboardNotice.style.display = 'block';
-            setTimeout(() => { clipboardNotice.style.display = 'none'; }, 2000);
-
-            // Update preview
+            showNotice('✅ Text copied to clipboard', '#0f0');
             previewField.textContent = translated;
         };
 
         // Preview: show translation without copying
         previewBtn.onclick = async () => {
             const input = document.querySelector('textarea[data-a-target="chat-input"], div[contenteditable][data-a-target="chat-input"]');
-            if (!input) return alert('No text detected');
-
-            const text = input.value || input.textContent || '';
-            if (!text.trim()) return alert('No text detected');
+            const text = input?.value || input?.textContent || '';
+            if (!text.trim()) {
+                showNotice('⚠️ No text detected', '#ff0');
+                return;
+            }
 
             previewField.textContent = 'Translating...';
             const translated = await translateText(text, targetLang);
             previewField.textContent = translated;
         };
 
-        // Reset preview and clipboard notice when message is sent
+        // Reset preview and notice when message is sent
         function resetOnSend(inputField) {
             const reset = () => {
                 previewField.textContent = '';
-                clipboardNotice.style.display = 'none';
+                notice.style.display = 'none';
                 lastTranslation = '';
             };
 
-            // Listen enter (without shift)
             inputField.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) reset();
             });
 
-            // Listen to twitch send button
             const sendBtn = inputField.closest('form')?.querySelector('button[data-a-target="chat-send-button"]');
-            if (sendBtn) {
-                sendBtn.addEventListener('click', reset);
-            }
+            if (sendBtn) sendBtn.addEventListener('click', reset);
         }
 
-        container.append(select, translateBtn, previewBtn, previewField, clipboardNotice);
+        container.append(select, translateBtn, previewBtn, previewField, notice);
 
-        // Attach the reset after a short delay
         setTimeout(() => {
             const inputField = document.querySelector('textarea[data-a-target="chat-input"], div[contenteditable][data-a-target="chat-input"]');
             if (inputField) resetOnSend(inputField);
@@ -147,5 +146,5 @@
     mo.observe(document.body, {childList:true, subtree:true});
     setInterval(attachUI, 3000);
 
-    console.log('[TwitchTranslator v1.0] Loaded');
+    console.log('[TwitchTranslator v1.1] Loaded');
 })();
