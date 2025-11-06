@@ -1,4 +1,4 @@
-# Twitch Chat Translator Clipboard
+# Twitch Chat Translator
 
 **Version:** 1.0
 **Author:** Masuta  
