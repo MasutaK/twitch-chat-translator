@@ -44,14 +44,14 @@
         select.value = targetLang;
         select.onchange = e => targetLang = e.target.value;
 
-        // Bouton Translate
+        // Translate button
         const translateBtn = document.createElement('button');
         translateBtn.type='button';
         translateBtn.textContent='Translate';
         translateBtn.style.height='22px';
         translateBtn.style.fontSize='11px';
 
-        // Bouton Preview
+        // Preview button
         const previewBtn = document.createElement('button');
         previewBtn.type='button';
         previewBtn.textContent='Preview';
