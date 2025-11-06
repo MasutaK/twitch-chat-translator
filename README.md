@@ -61,7 +61,7 @@ This project is licensed under the **Creative Commons Attribution-NonCommercial 
 
 ### You must:
 
-- Give credit to the original author: `Masuta` and/or `[Your Name]`.  
+- Give credit to the original author: `Masuta`.  
 - Not use the script for commercial purposes.  
 - Include a link to the license if redistributing.
 
