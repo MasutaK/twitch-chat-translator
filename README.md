@@ -22,7 +22,7 @@ A **Tampermonkey / Greasemonkey** userscript for Twitch chat that allows you to 
 ## Installation
 
 1. Install [Tampermonkey](https://www.tampermonkey.net/) or [Greasemonkey](https://www.greasespot.net/) in your browser.
-2. Go to the [Raw GitHub URL](https://raw.githubusercontent.com/YOUR_USERNAME/twitch-chat-translator/main/twitch-translator.user.js) of the script.
+2. Go to the [Raw GitHub URL](https://raw.githubusercontent.com/MasutaK/twitch-chat-translator/main/twitch-translator.user.js) of the script.
 3. Click **Install** when prompted by Tampermonkey.
 
 > Make sure the script is enabled in your Tampermonkey dashboard.
