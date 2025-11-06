@@ -147,5 +147,5 @@
     mo.observe(document.body, {childList:true, subtree:true});
     setInterval(attachUI, 3000);
 
-    console.log('[TwitchTranslator Clipboard v10.3] Loaded');
+    console.log('[TwitchTranslator v1.0] Loaded');
 })();
