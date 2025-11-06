@@ -58,7 +58,7 @@
         previewBtn.style.height='22px';
         previewBtn.style.fontSize='11px';
 
-        // Field pour preview
+        // Field for preview
         const previewField = document.createElement('div');
         previewField.style.cssText = 'margin-top:2px;padding:2px 4px;background:rgba(255,255,255,0.1);border-radius:4px;font-size:11px;color:#fff;max-width:100%;white-space:pre-wrap;word-break:break-word;';
 
