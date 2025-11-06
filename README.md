@@ -37,8 +37,6 @@ A **Tampermonkey / Greasemonkey** userscript for Twitch chat that allows you to 
 4. Type your message in the chat input.  
 5. Click **Translate** to copy the translation to your clipboard.  
 6. Click **Preview** to see the translation without copying.  
-7. Use the checkbox **Show Preview** to toggle preview visibility.  
-8. Once you send a message, the preview and clipboard notification will automatically reset.
 
 ---
 
