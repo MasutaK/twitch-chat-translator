@@ -16,6 +16,7 @@ A **Tampermonkey / Greasemonkey** userscript for Twitch chat that allows you to 
 - Shows a temporary notification when the translation is copied.
 - Automatically resets preview and clipboard notice when a message is sent.
 - Supports multiple languages including English, French, Spanish, German, Portuguese, Japanese, Korean, and Russian.
+<img src="https://github.com/user-attachments/assets/e0ff14b8-3162-4544-b62e-4ef5989eef53" width="350">
 
 ---
 
