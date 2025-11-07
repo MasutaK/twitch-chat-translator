@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.0] - 2025-11-07
+### Changed
+
+#### Clipboard notification auto-hide:
+- The “Text copied to clipboard” message now automatically disappears after 3 seconds.
+
+#### Dynamic preview duration:
+- The translated text preview now remains visible for a duration proportional to its length.
+- Short messages disappear quickly.
+- Longer translations stay visible longer, using a smart timing algorithm with min/max limits.
+
+#### Improved user experience:
+- Both clipboard and preview feedback are now smoother and less intrusive.
+
+---
+
 ## [1.1.0] - 2025-11-06
 ### Changed
 - Removed all `alert()` popups.
