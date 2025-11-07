@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Twitch Chat Translator
 // @namespace    http://tampermonkey.net/
-// @version      1.2
-// @description  Translate chat messages, copy to clipboard without modifying chat, integrated below chat input
+// @version      1.3
+// @description  Translate chat messages, copy to clipboard without modifying chat, integrated below chat input + collapsible UI
 // @match        https://www.twitch.tv/*
 // @author       Masuta
 // ==/UserScript==
@@ -13,6 +13,7 @@
     let targetLang = 'en';
     let lastTranslation = '';
     let previewTimeout = null;
+    let collapsed = false;
 
     async function translateText(text, target = targetLang) {
         if (!text || !text.trim()) return '';
@@ -39,19 +40,49 @@
         container.style.cssText = `
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            align-items: stretch;
-            margin-top: 4px;
-            padding: 4px;
-            background: var(--color-background-base, rgba(0,0,0,0.25));
+            align-items: flex-start;
+            justify-content: flex-start;
+            margin-top: 2px;
+            padding: 0;
+            background: transparent !important;
             border-radius: 6px;
             font-size: 11px;
             color: var(--color-text-base, #fff);
+            overflow: hidden;
         `;
+
+        // Toggle row (arrow)
+        const toggleRow = document.createElement('div');
+        toggleRow.style.cssText = `
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 2px 4px;
+            user-select: none;
+        `;
+
+        const arrow = document.createElement('span');
+        arrow.textContent = '▼';
+        arrow.style.cssText = 'margin-right: 4px; font-size: 12px; transition: transform 0.2s ease; color: #ccc;';
+        arrow.onmouseenter = () => (arrow.style.color = '#fff');
+        arrow.onmouseleave = () => (arrow.style.color = '#ccc');
+
+        const title = document.createElement('span');
+        title.textContent = 'Translator';
+        title.style.cssText = 'font-size: 11px; opacity: 0.8;';
+
+        toggleRow.append(arrow, title);
 
         // Language select
         const select = document.createElement('select');
-        select.style.cssText = 'height:22px;font-size:11px;border-radius:4px;background:#18181b;color:#fff;border:1px solid #444;';
+        select.style.cssText = `
+            height:22px;
+            font-size:11px;
+            border-radius:4px;
+            background:#18181b;
+            color:#fff;
+            border:1px solid #444;
+        `;
         [
             ['English', 'en'], ['Français', 'fr'], ['Español', 'es'], ['Deutsch', 'de'],
             ['Português', 'pt'], ['日本語', 'ja'], ['한국어', 'ko'], ['Русский', 'ru']
@@ -66,36 +97,83 @@
 
         // Buttons line
         const buttons = document.createElement('div');
-        buttons.style.cssText = 'display:flex;gap:4px;align-items:center;';
+        buttons.style.cssText = `
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 4px;
+            width: 100%;
+            margin: 0;
+            padding: 2px 4px;
+            background: transparent !important;
+        `;
 
         const translateBtn = document.createElement('button');
         translateBtn.textContent = 'Translate';
-        translateBtn.style.cssText = 'height:22px;font-size:11px;background:#9147ff;color:#fff;border:none;border-radius:4px;cursor:pointer;padding:0 6px;';
-        translateBtn.onmouseenter = () => translateBtn.style.background = '#772ce8';
-        translateBtn.onmouseleave = () => translateBtn.style.background = '#9147ff';
+        translateBtn.style.cssText = `
+            height:22px;
+            font-size:11px;
+            background:#9147ff;
+            color:#fff;
+            border:none;
+            border-radius:4px;
+            cursor:pointer;
+            padding:0 6px;
+        `;
+        translateBtn.onmouseenter = () => (translateBtn.style.background = '#772ce8');
+        translateBtn.onmouseleave = () => (translateBtn.style.background = '#9147ff');
 
         const previewBtn = document.createElement('button');
         previewBtn.textContent = 'Preview';
-        previewBtn.style.cssText = 'height:22px;font-size:11px;background:#2f2f35;color:#fff;border:none;border-radius:4px;cursor:pointer;padding:0 6px;';
-        previewBtn.onmouseenter = () => previewBtn.style.background = '#3b3b44';
-        previewBtn.onmouseleave = () => previewBtn.style.background = '#2f2f35';
+        previewBtn.style.cssText = `
+            height:22px;
+            font-size:11px;
+            background:#2f2f35;
+            color:#fff;
+            border:none;
+            border-radius:4px;
+            cursor:pointer;
+            padding:0 6px;
+        `;
+        previewBtn.onmouseenter = () => (previewBtn.style.background = '#3b3b44');
+        previewBtn.onmouseleave = () => (previewBtn.style.background = '#2f2f35');
+
+        buttons.append(select, translateBtn, previewBtn);
+
+        // Content area (buttons + preview + notice)
+        const content = document.createElement('div');
+        content.style.cssText = `
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            width: 100%;
+            transition: max-height 0.25s ease, opacity 0.25s ease;
+            overflow: hidden;
+            background: transparent !important;
+        `;
+        content.append(buttons);
 
         // Preview field
         const previewField = document.createElement('div');
         previewField.style.cssText = `
             padding: 2px 4px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
             border-radius: 4px;
             font-size: 11px;
             color: #fff;
             white-space: pre-wrap;
             word-break: break-word;
             transition: opacity 0.4s ease;
+            width: 100%;
         `;
+        content.append(previewField);
 
         // Notice field
         const notice = document.createElement('div');
         notice.style.cssText = 'font-size:11px;font-weight:bold;display:none;';
+        content.append(notice);
+
         function showNotice(text, color = '#0f0', duration = 3000) {
             notice.textContent = text;
             notice.style.color = color;
@@ -117,8 +195,6 @@
             copyToClipboard(translated);
             showNotice('✅ Text copied to clipboard', '#0f0', 3000);
             previewField.textContent = translated;
-
-            // Display preview for adaptive time
             adaptivePreviewTimeout(translated, previewField);
         };
 
@@ -131,15 +207,13 @@
             previewField.textContent = 'Translating...';
             const translated = await translateText(text, targetLang);
             previewField.textContent = translated;
-
-            // Display preview for adaptive time
             adaptivePreviewTimeout(translated, previewField);
         };
 
-        // Adaptive timeout function
+        // Adaptive timeout
         function adaptivePreviewTimeout(text, field) {
             clearTimeout(previewTimeout);
-            const time = Math.min(Math.max(3000, (text.length / 40) * 1000), 10000); // 3s–10s
+            const time = Math.min(Math.max(3000, (text.length / 40) * 1000), 10000);
             field.style.opacity = '1';
             previewTimeout = setTimeout(() => {
                 field.style.opacity = '0';
@@ -147,8 +221,25 @@
             }, time);
         }
 
-        buttons.append(select, translateBtn, previewBtn);
-        container.append(buttons, previewField, notice);
+        // Toggle visibility (arrow)
+        toggleRow.onclick = () => {
+            collapsed = !collapsed;
+            if (collapsed) {
+                content.style.maxHeight = '0';
+                content.style.opacity = '0';
+                arrow.textContent = '▶';
+            } else {
+                content.style.maxHeight = '200px';
+                content.style.opacity = '1';
+                arrow.textContent = '▼';
+            }
+        };
+
+        // Init expanded
+        content.style.maxHeight = '200px';
+        content.style.opacity = '1';
+
+        container.append(toggleRow, content);
         return container;
     }
 
@@ -160,7 +251,6 @@
         if (document.getElementById('twitch-translator-ui')) return;
 
         const ui = createUI();
-        // place below the chat field
         if (input.nextSibling) parent.insertBefore(ui, input.nextSibling);
         else parent.appendChild(ui);
     }
@@ -169,5 +259,5 @@
     mo.observe(document.body, { childList: true, subtree: true });
     setInterval(attachUI, 3000);
 
-    console.log('[TwitchTranslator v1.2] Loaded');
+    console.log('[TwitchTranslator v1.3] Loaded');
 })();
