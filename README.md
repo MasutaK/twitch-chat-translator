@@ -78,16 +78,3 @@ Please keep clear commit messages and respect the non-commercial requirement.
 ---
 
 **Note:** This script relies on the free Google Translate API endpoint, which may have usage limits.
-
----
-
-## ☕ Support
-
-If you like this project and want to support future updates!  
-<!-- PayPal Logo -->
-<p>
-  <a href="https://paypal.me/masutadev" title="Support me on PayPal">
-    <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_74x46.jpg" alt="PayPal Logo" />
-  </a>
-</p>
-<!-- PayPal Logo -->
