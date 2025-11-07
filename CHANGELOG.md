@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.3.0] - 2025-11-07
+### Added
+#### Collapsible UI panel:
+- Added a toggle arrow on the left side to show or hide the language selector and action buttons.
+- By default, the panel is expanded and fully visible.
+- Users can click the arrow to collapse the interface for a cleaner look.
+
+### Changed
+#### Transparent background:
+- The translator panel background is now fully transparent, blending naturally with Twitch’s chat area.
+
+#### Layout improvements:
+- All UI elements are now left-aligned for a cleaner and more compact appearance.
+- Removed extra spacing and visual artifacts below the language selector and buttons.
+
+---
+
 ## [1.2.0] - 2025-11-07
 ### Changed
 
