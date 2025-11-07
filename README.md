@@ -1,6 +1,6 @@
 # Twitch Chat Translator
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Masuta  
 **License:** CC BY-NC 4.0  
 
