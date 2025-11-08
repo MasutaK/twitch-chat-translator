@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.4.0] - 2025-11-08
+### Added
+#### Persistent settings: 
+- The translator now remembers the selected language and whether the panel is visible (collapsed) or expanded, even when switching streams.
+
+#### New languages: 
+- Added Chinese (zh) and Arabic (ar) to the language selector.
+
+### Changed
+#### UI persistence: 
+- The visibility state of the panel is now saved and restored automatically.
+
+#### Improved usability:
+- Users no longer need to reselect their language or toggle visibility each time they open a new stream.
+
+### Fixed
+- Minor adjustments to ensure smooth toggle animations when restoring the collapsed/expanded state.
+
 ## [1.3.0] - 2025-11-07
 ### Added
 #### Collapsible UI panel:
