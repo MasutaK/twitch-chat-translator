@@ -1,6 +1,6 @@
 # Twitch Chat Translator
 
-**Version:** 1.3
+**Version:** 1.4
 **Author:** Masuta  
 **License:** CC BY-NC 4.0  
 
@@ -15,7 +15,8 @@ A **Tampermonkey / Greasemonkey** userscript for Twitch chat that allows you to 
 - Optional preview of the translated message.
 - Shows a temporary notification when the translation is copied.
 - Automatically resets preview and clipboard notice when a message is sent.
-- Supports multiple languages including English, French, Spanish, German, Portuguese, Japanese, Korean, and Russian.
+- Supports multiple languages including English, French, Spanish, German, Portuguese, Japanese, Korean, Russian, Chinese, Arabic.
+- Language selection and panel visibility are automatically saved.
 <img src="https://github.com/user-attachments/assets/e0ff14b8-3162-4544-b62e-4ef5989eef53" width="350">
 
 ---
@@ -53,6 +54,8 @@ A **Tampermonkey / Greasemonkey** userscript for Twitch chat that allows you to 
 | 日本語        | ja   |
 | 한국어        | ko   |
 | Русский       | ru   |
+| 中文        | zh   |
+| العربية        | ar   |
 
 ---
 
