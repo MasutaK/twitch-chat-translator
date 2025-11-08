@@ -1,20 +1,43 @@
 // ==UserScript==
 // @name         Twitch Chat Translator
 // @namespace    http://tampermonkey.net/
-// @version      1.3
-// @description  Translate chat messages, copy to clipboard without modifying chat, integrated below chat input + collapsible UI
+// @version      1.4
+// @description  Translate chat messages, copy to clipboard without modifying chat, integrated below chat input + collapsible UI + persistent settings
 // @match        https://www.twitch.tv/*
 // @author       Masuta
+// @homepage     https://github.com/MasutaK/twitch-chat-translator
+// @source       https://github.com/MasutaK/twitch-chat-translator
+// @supportURL   https://github.com/MasutaK/twitch-chat-translator/issues
 // ==/UserScript==
 
 (() => {
     'use strict';
 
-    let targetLang = 'en';
+    const STORAGE_KEY = 'twitch_translator_settings';
+    let settings = loadSettings();
+
+    let targetLang = settings.language || 'en';
     let lastTranslation = '';
     let previewTimeout = null;
-    let collapsed = false;
+    let collapsed = settings.collapsed ?? false;
 
+    /*** === SETTINGS HANDLER === ***/
+    function loadSettings() {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        } catch {
+            return {};
+        }
+    }
+
+    function saveSettings() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            language: targetLang,
+            collapsed: collapsed
+        }));
+    }
+
+    /*** === TRANSLATION === ***/
     async function translateText(text, target = targetLang) {
         if (!text || !text.trim()) return '';
         try {
@@ -34,6 +57,7 @@
             .catch(err => console.error('[Translator] Clipboard error:', err));
     }
 
+    /*** === UI === ***/
     function createUI() {
         const container = document.createElement('div');
         container.id = 'twitch-translator-ui';
@@ -62,7 +86,7 @@
         `;
 
         const arrow = document.createElement('span');
-        arrow.textContent = '▼';
+        arrow.textContent = collapsed ? '▶' : '▼';
         arrow.style.cssText = 'margin-right: 4px; font-size: 12px; transition: transform 0.2s ease; color: #ccc;';
         arrow.onmouseenter = () => (arrow.style.color = '#fff');
         arrow.onmouseleave = () => (arrow.style.color = '#ccc');
@@ -85,7 +109,8 @@
         `;
         [
             ['English', 'en'], ['Français', 'fr'], ['Español', 'es'], ['Deutsch', 'de'],
-            ['Português', 'pt'], ['日本語', 'ja'], ['한국어', 'ko'], ['Русский', 'ru']
+            ['Português', 'pt'], ['日本語', 'ja'], ['한국어', 'ko'], ['Русский', 'ru'],
+            ['中文', 'zh'], ['العربية', 'ar']
         ].forEach(([n, c]) => {
             const o = document.createElement('option');
             o.value = c;
@@ -93,7 +118,10 @@
             select.appendChild(o);
         });
         select.value = targetLang;
-        select.onchange = e => targetLang = e.target.value;
+        select.onchange = e => {
+            targetLang = e.target.value;
+            saveSettings(); // Save language choice
+        };
 
         // Buttons line
         const buttons = document.createElement('div');
@@ -140,7 +168,7 @@
 
         buttons.append(select, translateBtn, previewBtn);
 
-        // Content area (buttons + preview + notice)
+        // Content area
         const content = document.createElement('div');
         content.style.cssText = `
             display: flex;
@@ -221,7 +249,7 @@
             }, time);
         }
 
-        // Toggle visibility (arrow)
+        // Toggle visibility
         toggleRow.onclick = () => {
             collapsed = !collapsed;
             if (collapsed) {
@@ -233,16 +261,23 @@
                 content.style.opacity = '1';
                 arrow.textContent = '▼';
             }
+            saveSettings(); // Save the state (open/closed)
         };
 
-        // Init expanded
-        content.style.maxHeight = '200px';
-        content.style.opacity = '1';
+        // Init expanded/collapsed
+        if (collapsed) {
+            content.style.maxHeight = '0';
+            content.style.opacity = '0';
+        } else {
+            content.style.maxHeight = '200px';
+            content.style.opacity = '1';
+        }
 
         container.append(toggleRow, content);
         return container;
     }
 
+    /*** === ATTACH UI === ***/
     function attachUI() {
         const input = document.querySelector('textarea[data-a-target="chat-input"], div[contenteditable][data-a-target="chat-input"]');
         if (!input) return;
@@ -259,5 +294,5 @@
     mo.observe(document.body, { childList: true, subtree: true });
     setInterval(attachUI, 3000);
 
-    console.log('[TwitchTranslator v1.3] Loaded');
+    console.log('[TwitchTranslator v1.4] Loaded');
 })();
