@@ -75,8 +75,7 @@ This project is licensed under the **Creative Commons Attribution-NonCommercial 
 
 ## Contributing
 
-Feel free to fork the repository, suggest improvements, or submit pull requests.  
-Please keep clear commit messages and respect the non-commercial requirement.
+Feel free to suggest improvements and report bugs.
 
 ---
 
